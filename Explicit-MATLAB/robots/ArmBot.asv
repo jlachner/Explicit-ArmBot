@@ -1,0 +1,57 @@
+classdef ArmBot < RobotPrimitive & handle
+    % ArmBot: 7-DOF model of the human arm
+    % Joint 1-3: Shoulder (3 DOF, spherical)
+    % Joint 4: Elbow (1 DOF, revolute)
+    % Joint 5-7: Wrist (3 DOF, spherical)
+
+    methods
+        function obj = ArmBot(L1, L2, L3)
+            if nargin < 1, L1 = 0.3; end  % Upper arm length
+            if nargin < 2, L2 = 0.25; end % Forearm length
+            if nargin < 3, L3 = 0.15; end % Hand length
+
+            obj.Name = 'ArmBot';
+            obj.Dimension = 3;
+            obj.nq = 7;
+
+            % Parent structure: serial chain
+            obj.ParentID = 0:obj.nq;
+
+            % All joints are revolute
+            obj.JointTypes = ones(1, obj.nq);
+
+            % Origins of each joint axis (relative to parent)
+            obj.AxisOrigins = zeros(3, obj.nq);
+
+            % Axis directions (all rotate about z-axis)
+            obj.AxisDirections = repmat([0; 0; 1], 1, obj.nq);
+
+            % Masses (estimated)
+            obj.Masses = [2, 2, 2, 1.5, 1.2, 1.2, 1.2];
+
+            % Inertias (simplified diagonal)
+            obj.Inertias = zeros(6, obj.nq);
+            for i = 1:obj.nq
+                m = obj.Masses(i);
+                obj.Inertias(:, i) = [1 1 1 0 0 0] * m * 0.01;
+            end
+
+            % Link frame offsets (from one joint to the next)
+            obj.H_init = repmat(eye(4), 1, 1, obj.nq);
+            obj.H_init(1:3, 4, 3) = [0; 0; L1];    % Shoulder to elbow
+            obj.H_init(1:3, 4, 4) = [0; 0; L2];    % Elbow to wrist
+
+            % Visual wrist link offsets (small but needed)
+            obj.H_init(1:3, 4, 5) = [0; 0; 0.01];  % Joint 5 to 6
+            obj.H_init(1:3, 4, 6) = [0; 0; 0.01];  % Joint 6 to 7
+
+            obj.H_init(1:3, 4, 7) = [0; 0; L3];    % Wrist to hand
+
+            % Center of mass transforms (approximate midpoints)
+            obj.H_COM_init = repmat(eye(4), 1, 1, obj.nq);
+            obj.H_COM_init(1:3, 4, 3) = [0; 0; L1/2];  % upper arm
+            obj.H_COM_init(1:3, 4, 4) = [0; 0; L2/2];  % forearm
+            obj.H_COM_init(1:3, 4, 7) = [0; 0; L3/2];  % hand
+        end
+    end
+end
