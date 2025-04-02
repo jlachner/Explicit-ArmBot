@@ -1,6 +1,6 @@
 # Explicit-ArmBot
 
-**Explicit-ArmBot** is a MATLAB-based framework for simulating, animating, and analyzing human arm movements and robot kinematics using an anatomically structured arm model. It supports subject-specific modeling from anthropometric data and includes high-quality animations and dynamic computations via Exponential Maps.
+**Explicit-ArmBot** is a MATLAB-based framework for simulating, animating, and analyzing human arm movements and robot kinematics using an anatomically structured arm model. It supports subject-specific modeling from anthropometric data and includes animations and dynamic computations via Exponential Maps.
 
 ---
 
