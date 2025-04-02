@@ -100,6 +100,11 @@ Johannes Lachner
 Postdoctoral Researcher, MIT  
 Contact: jlachner[at]mit.edu
 
+Alexander Dietrich
+Head of the whole-body control group, Institute of Robotics and Mechatronics, DLR
+Lecturer at TUM
+Contact: Alexander.Dietrich[at]dlr.de
+
 ---
 
 ## 📄 License
