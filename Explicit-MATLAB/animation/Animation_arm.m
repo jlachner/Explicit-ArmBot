@@ -58,7 +58,7 @@ classdef Animation_arm < handle
             obj.Robots{obj.nRobots} = robot;
 
             nq = robot.nq;
-            obj.gSpheres{obj.nRobots} = gobjects(nq + 1, 1);  % +1 for shoulder origin
+            obj.gSpheres{obj.nRobots} = cell(nq + 1, 1);  % using cell array now
             obj.gCylinders{obj.nRobots} = gobjects(nq, 1);
 
             T = repmat(eye(4), 1, 1, nq + 1);
@@ -68,59 +68,33 @@ classdef Animation_arm < handle
                 T(:, :, j + 1) = T(:, :, parent) * robot.H_ij(:, :, j) * robot.H_init(:, :, j);
             end
 
+            [xs, ys, zs] = sphere(10);
+            r = 0.015;
+
             for j = 1:nq
                 parent = robot.ParentID(j) + 1;
                 p1 = T(1:3, 4, parent);
                 p2 = T(1:3, 4, j + 1);
 
-                % Link color
+                % Assign color based on link index
                 if j <= 3
-                    linkColor = [1.0 0.5 0.1];  % shoulder (orange)
+                    color = [1.0 0.5 0.1];  % shoulder
                 elseif j == 4
-                    linkColor = [0.5 0.3 0.9];  % elbow (purple)
+                    color = [0.5 0.3 0.9];  % elbow
                 else
-                    linkColor = [0 0 0];        % wrist (black)
+                    color = [0 0 0];        % wrist
                 end
-
-                % Sphere color logic
-                if j + 1 == 2
-                    sphereColor = [0.5 0.3 0.9];  % purple
-                else
-                    sphereColor = linkColor;
-                end
-
-                % --- DEBUG PRINTS ---
-                fprintf('Joint %d:\n', j + 1);
-                fprintf('  Parent ID: %d\n', parent);
-                fprintf('  p1 = [%f, %f, %f]\n', p1);
-                fprintf('  p2 = [%f, %f, %f]\n', p2);
-                fprintf('  linkColor = [%f %f %f]\n', linkColor);
-                fprintf('  sphereColor = [%f %f %f]\n', sphereColor);
-                fprintf('\n');
 
                 % Draw link
                 [Xc, Yc, Zc] = createCylinder(p1, p2, 0.01, 10);
                 obj.gCylinders{obj.nRobots}(j) = surf(Xc, Yc, Zc, ...
-                    'FaceColor', linkColor, 'EdgeColor', 'none');
+                    'FaceColor', color, 'EdgeColor', 'none');
 
-                % Draw sphere at joint j+1
-                [xs, ys, zs] = sphere(10);
-                r = 0.015;
-                obj.gSpheres{obj.nRobots}(j + 1) = surf(r * xs + p2(1), r * ys + p2(2), r * zs + p2(3), ...
-                    'FaceColor', sphereColor, 'EdgeColor', 'none');
+                % Draw sphere at p1
+                obj.gSpheres{obj.nRobots}{parent} = surf( ...
+                    r * xs + p1(1), r * ys + p1(2), r * zs + p1(3), ...
+                    'FaceColor', color, 'EdgeColor', 'none');
             end
-
-            % Add shoulder base sphere
-            p0 = T(1:3, 4, 1);
-            [xs, ys, zs] = sphere(10);
-            r = 0.015;
-            obj.gSpheres{obj.nRobots}(1) = surf(r * xs + p0(1), r * ys + p0(2), r * zs + p0(3), ...
-                'FaceColor', [1.0 0.5 0.1], 'EdgeColor', 'none');
-
-            % --- DEBUG PRINT FOR BASE SPHERE ---
-            fprintf('Base sphere (joint 1):\n');
-            fprintf('  p0 = [%f, %f, %f]\n', p0);
-            fprintf('  color = [1.000 0.500 0.100] (orange)\n\n');
         end
 
         function update(obj, t)
@@ -135,35 +109,27 @@ classdef Animation_arm < handle
                     T(:, :, j + 1) = T(:, :, parent) * robot.H_ij(:, :, j) * robot.H_init(:, :, j);
                 end
 
+                [xs, ys, zs] = sphere(10);
+                r = 0.015;
+
                 for j = 1:nq
                     parent = robot.ParentID(j) + 1;
                     p1 = T(1:3, 4, parent);
                     p2 = T(1:3, 4, j + 1);
 
+                    % Update link
                     if isvalid(obj.gCylinders{i}(j))
                         [Xc, Yc, Zc] = createCylinder(p1, p2, 0.01, 10);
                         set(obj.gCylinders{i}(j), 'XData', Xc, 'YData', Yc, 'ZData', Zc);
                     end
 
-                    if isvalid(obj.gSpheres{i}(j + 1))
-                        [xs, ys, zs] = sphere(10);
-                        r = 0.015;
-                        set(obj.gSpheres{i}(j + 1), ...
-                            'XData', r * xs + p2(1), ...
-                            'YData', r * ys + p2(2), ...
-                            'ZData', r * zs + p2(3));
+                    % Update sphere at p1
+                    if ~isempty(obj.gSpheres{i}{parent}) && isvalid(obj.gSpheres{i}{parent})
+                        set(obj.gSpheres{i}{parent}, ...
+                            'XData', r * xs + p1(1), ...
+                            'YData', r * ys + p1(2), ...
+                            'ZData', r * zs + p1(3));
                     end
-                end
-
-                % Update shoulder sphere at base
-                p0 = T(1:3, 4, 1);
-                if isvalid(obj.gSpheres{i}(1))
-                    [xs, ys, zs] = sphere(10);
-                    r = 0.015;
-                    set(obj.gSpheres{i}(1), ...
-                        'XData', r * xs + p0(1), ...
-                        'YData', r * ys + p0(2), ...
-                        'ZData', r * zs + p0(3));
                 end
             end
             drawnow limitrate nocallbacks;

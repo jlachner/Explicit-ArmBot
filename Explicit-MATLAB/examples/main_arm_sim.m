@@ -5,7 +5,7 @@ clear; close all; clc;
 
 % Time settings
 dt = 0.05;
-t_total = 5;
+t_total = 50;
 t = 0:dt:t_total;
 
 % Create the robot and initialize
@@ -19,7 +19,7 @@ robot = ArmBot(l1, l2, l3, m1, m2, m3);
 robot.init();
 
 % Fixed joint configuration
-q = deg2rad([30, 30, 0, 0, 0, 0, 0])';
+q = deg2rad([0, 0, 0, 0, 0, 0, 0])';
 robot.updateKinematics(q);   
 
 % Create animation
@@ -30,7 +30,7 @@ anim.attachRobot(robot);
 % Animation loop — only move the wrist joint (joint 5)
 for i = 1:length(t)
     q_temp = q;
-    q_temp(7) = deg2rad(15) * sin(2 * pi * 0.5 * t(i));  % 0.5 Hz oscillation
+    q_temp(5) = deg2rad(15) * sin(2 * pi * 0.5 * t(i));  % 0.5 Hz oscillation
     robot.updateKinematics(q_temp);
     anim.update(t(i));
 end
