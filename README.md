@@ -1,12 +1,12 @@
-# upperArm_sim
+# Explicit-ArmBot
 
-**upperArm_sim** is a MATLAB-based framework for simulating, animating, and analyzing human arm movements and robot kinematics using an anatomically structured arm model. It supports subject-specific modeling from anthropometric data and includes high-quality animations and dynamic computations via Exponential Maps.
+**Explicit-ArmBot** is a MATLAB-based framework for simulating, animating, and analyzing human arm movements and robot kinematics using an anatomically structured arm model. It supports subject-specific modeling from anthropometric data and includes high-quality animations and dynamic computations via Exponential Maps.
 
 ---
 
 ## Project Structure
 
-upperArm_sim/
+Explicit-ArmBot/
 │
 ├── subject_data.xlsx       # Subject-specific anthropometric and demographic data
 ├── README.md               # This file
@@ -30,7 +30,7 @@ upperArm_sim/
 
 1. **Clone the repository** or download it:
     ```bash
-    git clone https://github.com/YOUR_USERNAME/upperArm_sim.git
+    git clone https://github.com/YOUR_USERNAME/Explicit-ArmBot.git
     ```
 
 2. **Start MATLAB**, navigate to the `Explicit-MATLAB` directory, and run:
@@ -92,7 +92,6 @@ To simulate new participants:
 To record animations as videos, utility functions in `/utils/` can be enabled. See `saveVideo_*` functions.
 
 ---
-
 
 ## 👨‍🔬 Authors
 
