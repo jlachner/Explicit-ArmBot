@@ -94,7 +94,7 @@ To record animations as videos, utility functions in `/utils/` can be enabled. S
 
 ---
 
-## 👨‍🔬 Authors
+## Authors
 
 Johannes Lachner  
 Postdoctoral Researcher, MIT  
