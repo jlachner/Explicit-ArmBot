@@ -1,0 +1,64 @@
+% Clean-up
+clear; close all; clc;
+
+% Time settings
+dt = 0.05;
+t_total = 50;
+t = 0:dt:t_total;
+
+% Load subject data from Excel
+data = readtable('../subject_data.xlsx');
+
+% Choose which subject to simulate
+subject_id = "S02";  
+s = find(data.SubjectID == subject_id);
+body_mass = data.Weight_kg(s);
+l1 = data.UpperArm_m(s);
+l2 = data.Forearm_m(s);
+l3 = data.Hand_m(s);
+
+% Compute segment properties based on Winter (1990)
+[segment_mass, segment_I] = compute_segment_properties(body_mass, [l1, l2, l3]);
+
+% Initialize robot with segment lengths only
+robot = ArmBot(l1, l2, l3);
+robot.setMasses(segment_mass);
+robot.setInertias(segment_I);
+robot.init();
+
+% Fixed joint configuration
+q = deg2rad([0, 0, 0, 0, 0, 0, 0])';
+robot.updateKinematics(q);   
+
+% Create animation
+anim = Animation_arm('xLim', [-0.5 0.5], 'yLim', [-0.5 0.5], 'zLim', [-0.2 1.0]);
+anim.init();
+anim.attachRobot(robot);     
+
+% Animation loop — only move the wrist joint (joint 5)
+for i = 1:length(t)
+    q_temp = q;
+    q_temp(5) = deg2rad(15) * sin(2 * pi * 0.5 * t(i));  % 0.5 Hz oscillation
+    robot.updateKinematics(q_temp);
+    anim.update(t(i));
+end
+
+% Function to calculate the segment properties
+function [segment_mass, segment_I] = compute_segment_properties(body_mass, segment_lengths)
+% Based on Winter's anthropometry: mass % and radius of gyration % per segment
+% Order: Upper Arm, Forearm, Hand
+
+% Segment mass percentages (Winter 1990, adult male)
+mass_percent = [0.028, 0.016, 0.006];  % [Upper Arm, Forearm, Hand]
+k_percent =   [0.322, 0.303, 0.297];  % Radius of gyration as % of segment length
+
+segment_mass = mass_percent * body_mass;
+segment_I = zeros(3, 1);  % scalar moment of inertia for each segment
+
+for i = 1:3
+    l = segment_lengths(i);
+    m = segment_mass(i);
+    k = k_percent(i) * l;
+    segment_I(i) = m * k^2;  % moment of inertia about CoM, transverse axis
+end
+end

@@ -58,7 +58,7 @@ classdef Animation_arm < handle
             obj.Robots{obj.nRobots} = robot;
 
             nq = robot.nq;
-            obj.gSpheres{obj.nRobots} = cell(nq + 1, 1);  % using cell array now
+            obj.gSpheres{obj.nRobots} = cell(nq + 1, 1);  
             obj.gCylinders{obj.nRobots} = gobjects(nq, 1);
 
             T = repmat(eye(4), 1, 1, nq + 1);
