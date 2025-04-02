@@ -6,23 +6,24 @@
 
 ## Project Structure
 
+```text
 Explicit-ArmBot/
 │
-├── subject_data.xlsx       # Subject-specific anthropometric and demographic data
-├── README.md               # This file
-├── LICENSE                 # Licensing information
+├── subject_data.xlsx        # Subject-specific anthropometric and demographic data
+├── README.md                # This file
+├── LICENSE                  # Licensing information
 │
 └── Explicit-MATLAB/
-├── setup.m                 # Initialization script (MUST be run before simulations)
-├── func_addSubfolders.m   # Adds all necessary subfolders to the MATLAB path
-│
-├── examples/              # Main scripts for simulation (e.g., main_arm_sim.m)
-├── animation/             # Real-time 3D animation utilities
-├── robots/                # ArmBot and other robots, extending RobotPrimitive
-├── graphics/              # VFC data for visualization
-├── helpers_geometry/      # Geometry-related helper functions
-├── interpolation/         # Symplectic Euler integrators
-└── utils/                 # Utility functions (e.g., video saving)
+    ├── setup.m                 # Initialization script (MUST be run before simulations)
+    ├── func_addSubfolders.m   # Adds all necessary subfolders to the MATLAB path
+    │
+    ├── examples/              # Main scripts for simulation (e.g., main_arm_sim.m)
+    ├── animation/             # Real-time 3D animation utilities
+    ├── robots/                # ArmBot and other robots, extending RobotPrimitive
+    ├── graphics/              # VFC data for visualization
+    ├── helpers_geometry/      # Geometry-related helper functions
+    ├── interpolation/         # Symplectic Euler integrators
+    └── utils/                 # Utility functions (e.g., video saving)
 
 ---
 
